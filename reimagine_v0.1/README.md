@@ -1,13 +1,13 @@
 # @reimagine — Image Re-Imagination Configuration Skill
 
-**Version:** 0.1.0 · **Date:** 2026-09-29 · **Author:** TSSTM (Arena AI Agent Mode), Commander-commissioned
+**Version:** 0.1.1 · **Date:** 2026-09-29 · **Author:** TSSTM (Arena AI Agent Mode), Commander-commissioned
 **Status:** WORKSPACE BUILD — lives in the Skills repo for polishing; **NOT live canon until Patch + Commander/Desk authorize.**
 
 ## What this is
 
 A configuration skill for image re-imagination work: given a **task brief + photo reference**, it runs a seven-stage pipeline (intake → classify → route → configure → gate → emit → log) and produces a **paste-ready, law-gated prompt package** — not just a prettier prompt. Built for the Commander's context (Mapúa architecture student, PH law, PD 1096 plates) and general enough for any image re-imagination task with a reference photo.
 
-**Core finding it is built on:** in a 16-item practitioner audit, only **2/15** captured real-world prompts contained preserve-language — while a measured experiment showed a preserve-list prompt roughly **doubled geometric fidelity** (edge-IoU 0.485 → 0.898, SSIM 0.867 → 0.967). Forcing explicit preserve/alter lists is the single highest-leverage change available. That is this skill's heart.
+**Core finding it is built on:** in a 16-item audit (15 captured practitioner prompts + 1 own comparator), only **2 of the 15 captured prompts** contained preserve-language — while a measured experiment showed a preserve-list prompt roughly **doubled geometric fidelity** (edge-IoU 0.485 → 0.898, SSIM 0.867 → 0.967) (single-plate, 3-run calibration; the winning run still retained only 25.4% of required-annotation pixels — measured, not magic). Forcing explicit preserve/alter lists is the single highest-leverage change available. That is this skill's heart.
 
 ## Tree
 
@@ -32,7 +32,7 @@ reimagine_v0.1/
   evals/
     VECTORS.md                    3 acceptance vectors + rubric
     grader.py                     programmatic grader (C1–C6), stdlib only
-    test_grader.py                4 tests — run exactly: python3 evals/test_grader.py
+    test_grader.py                22 tests — run exactly: python3 -W error::ResourceWarning evals/test_grader.py
     examples/vector2_with_skill.md   GREEN exemplar (graded PASS)
     examples/vector2_baseline.md     RED exemplar — the documented no-skill failure
   evidence/
@@ -42,7 +42,7 @@ reimagine_v0.1/
 ## Run the evals
 
 ```bash
-python3 evals/test_grader.py                          # 4 tests
+python3 -W error::ResourceWarning evals/test_grader.py  # 22 tests
 python3 evals/grader.py evals/examples/vector2_with_skill.md    # → PASS, exit 0
 python3 evals/grader.py evals/examples/vector2_baseline.md      # → FAIL, exit 1
 ```

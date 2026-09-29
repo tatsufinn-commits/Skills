@@ -31,7 +31,7 @@
 - Check the *actual* course/assignment policy before submission; a handbook example is not permission.
 - Credits for provider-generated text/labels: place attribution, measured labels and captions **outside** the generative pass (layout/GIS/presentation software); never rely on generated text for legal attribution or a scale bar.
 
-## Style authority (no-FoP, RA 8293)
+## G5 — Style authority (no-FoP, RA 8293)
 
 The Philippines has **no freedom of panorama** for architectural works. Authority rungs, highest first — all lawful:
 

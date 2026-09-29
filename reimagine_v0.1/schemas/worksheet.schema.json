@@ -5,7 +5,7 @@
   "required": ["TASK", "CARD", "PROVIDER", "PHOTO", "PHOTO_SOURCE", "SCHOOL", "STYLE_AUTHORITY", "RATIONALE", "sections"],
   "properties": {
     "TASK": {"type": "string"},
-    "CARD": {"type": "string", "pattern": "^(A|P|D|T)\\d{2}$"},
+    "CARD": {"type": "string", "enum": ["A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11", "A12", "P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10", "D01", "D02", "D03", "D04", "D05", "D06", "D07", "D08", "D09", "D10", "T01", "T02"]},
     "PROVIDER": {"type": "string", "description": "tool + model/version as confirmed in the live UI"},
     "PHOTO": {"type": "string", "enum": ["yes", "no"]},
     "PHOTO_SOURCE": {"type": "string", "enum": ["own", "licensed", "cleared", "internet-untraced", "none"]},
@@ -19,11 +19,11 @@
       "required": ["paste text", "preserve list", "alter list", "qa gate"],
       "properties": {
         "paste text": {"type": "string", "description": "paste-ready prompt; no unresolved brackets"},
-        "preserve list": {"type": "array", "items": {"type": "string"}, "description": "≥1 item when PHOTO=yes; first item = projection/view invariant; the literal string 'N/A — text-only brief; fidelity claims dropped' when PHOTO=no"},
-        "alter list": {"type": "array", "items": {"type": "string"}, "description": "≥1 item when PHOTO=yes; 'N/A' line when PHOTO=no"},
+        "preserve list": {"type": "array", "items": {"type": "string"}, "description": "≥1 item when PHOTO=yes; first item = projection/view invariant; the exact item 'N/A — text-only brief; fidelity claims dropped' when PHOTO=no"},
+        "alter list": {"type": "array", "items": {"type": "string"}, "description": "≥1 item when PHOTO=yes; an N/A item when PHOTO=no"},
         "qa gate": {"type": "array", "items": {"type": "string"}, "description": "≥5 decidable checkbox lines, each containing a check verb; plus one REJECT-DRIFT RULE line"},
         "disclosure": {"type": "string", "description": "required when SCHOOL=yes: caption + reproducible attribution with URL, access date (YYYY-MM-DD), prompt description"},
-        "tool settings": {"type": "array", "items": {"type": "string"}},
+        "tool settings": {"type": "array", "items": {"type": "string"}, "description": "At least one item when PHOTO=yes"},
         "log": {"type": "array", "items": {"type": "string"}}
       }
     }

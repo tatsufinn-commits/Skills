@@ -16,7 +16,7 @@ Collect the **six-field brief** (kit grammar): (1) SOURCE & rights · (2) VIEW &
 
 Three axes:
 - **Task family:** A (architecture portrayal change) · P (photo correction/enhancement) · D (3D transaction — first decide picture / editable asset / printable object) · T (audit/revise an existing attempt).
-- **Custody standing:** from Gate 0 + CMI check (G2) + no-FoP style check (G3 style rungs).
+- **Custody standing:** from Gate 0 + CMI check (G2) + no-FoP style-authority check (G5 rungs).
 - **Fidelity requirement:** which features are LOCKED (measured constraints from documents) vs visual cues; which band the output must reach (fidelity-dial decision bands).
 
 ## Stage 3 — ROUTE (references/atlas-router.md + provider-matrix.md)
@@ -48,7 +48,7 @@ Append to the iteration log: date · input (id, not contents) · tool + version 
 
 - Rights unknown → stop at Gate 0 (lawful alternatives).
 - Watermark/CMI removal request → refuse + explain (G2).
-- Living-architect named style → reformulate to lawful rung (G3 style).
+- Living-architect named style → reformulate to lawful rung (G5 style authority).
 - Drifted invariant → authoritative-editor redo, not adjective re-prompting.
 - Another angle needed → back to the model / 3D reconstruction; never img2img "rotate."
 - Provider past decay → re-scout before routing.
