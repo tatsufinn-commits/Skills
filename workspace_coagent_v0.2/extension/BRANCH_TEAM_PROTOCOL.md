@@ -26,12 +26,14 @@ git worktree add ../wt-MEET-A1   -b coagent/MEET/A1-DESK
 
 | Path | Who writes |
 |------|------------|
-| `workspace/meetings/<ID>/MESSAGES.md` | Any seat **append only** (or carrier) |
-| `workspace/meetings/<ID>/ROSTER.md` | LEAD (bootstrap); seats ack only |
-| `workspace/meetings/<ID>/DECISIONS.md` | LEAD or designated |
-| `workspace/meetings/<ID>/OUTCOME.md` | LEAD only |
+| `workspace/meetings/<ID>/02_MESSAGES.md` | Any seat **append only** (or carrier) |
+| `workspace/meetings/<ID>/01_ROSTER.md` | LEAD (bootstrap); seats ack only |
+| `workspace/meetings/<ID>/03_DECISIONS.md` | LEAD or designated |
+| `workspace/meetings/<ID>/04_OUTCOME.md` | LEAD only |
 | Seat task files under branch tree | **That seat only** |
 | RADIATION `main` / FIX branches | **Nobody** from this meeting without Commander lane |
+
+*Path note (TSSTM v0.2.1 fix): filenames are the numbered room files produced by `init_meeting.sh` (`01_ROSTER.md` … `04_OUTCOME.md`); earlier revisions of this table cited unnumbered names.*
 
 ---
 
