@@ -2,9 +2,16 @@
 
 **Doctrine:** realistic vectors, run **with-skill AND baseline in the same turn**, programmatic grading. **RED is pre-written:** the practitioner audit (16 items, 2/15 preserve-language) documents exactly what operators do without this skill.
 
-**Honest boundary:** the shipped examples are *authored exemplars* of the with-skill and baseline patterns (the baseline mirrors the audited field behavior `[O]`), graded by the programmatic grader. They are **not** live operator runs — runtime triggering/quality stays `[N]` until a measurement tranche. Image quality itself is never graded here; the grader scores the **configuration** (C1–C6).
+**Honest boundary:** the shipped examples are *authored exemplars* of the with-skill and baseline patterns (the baseline mirrors the audited field behavior `[O]`), graded by the programmatic grader. They are **not** live operator runs — runtime triggering/quality stays `[N]` until a measurement tranche. Image quality itself is never graded here; the grader scores the **configuration** (C1–C6 core + conditional F11).
 
-## Rubric — the six checks (implemented in grader.py)
+## Rubric — seven checks: C1–C6 core + F11 conditional (implemented in grader.py)
+
+C1–C6 are the six core checks and always run. **F11 fires only when PHOTO: yes**
+(text-only runs report six result rows); C1–C6 keep their codes — nothing is relabeled.
+The C3 CMI patterns are a **lexical tripwire over documented phrasing classes**
+(inflections, nominalizations, plurals, both word orders) with a negation guard for
+compliance prose — paraphrase-level evasion still passes; the refusal duty is the
+operator's, not the regex's.
 
 | Check | Meaning |
 |---|---|
@@ -14,6 +21,7 @@
 | C4 QA decidability | ≥5 checkbox lines with check verbs + REJECT-DRIFT rule present |
 | C5 traceability | valid card ID (A/P/D/T + 2 digits), provider, substantive rationale |
 | C6 disclosure | SCHOOL=yes → disclosure with URL + access date + prompt description |
+| F11 tool settings | PHOTO=yes → a tool settings section with ≥1 item (fires only when PHOTO: yes; text-only runs report six checks) |
 
 ## V1 — Vicinity (satellite screenshot → vicinity map package)
 

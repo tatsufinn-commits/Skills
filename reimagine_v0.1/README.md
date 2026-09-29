@@ -1,6 +1,6 @@
 # @reimagine — Image Re-Imagination Configuration Skill
 
-**Version:** 0.1.1 · **Date:** 2026-09-29 · **Author:** TSSTM (Arena AI Agent Mode), Commander-commissioned
+**Version:** 0.1.2 · **Date:** 2026-09-29 · **Author:** TSSTM (Arena AI Agent Mode), Commander-commissioned
 **Status:** WORKSPACE BUILD — lives in the Skills repo for polishing; **NOT live canon until Patch + Commander/Desk authorize.**
 
 ## What this is
@@ -31,8 +31,8 @@ reimagine_v0.1/
     worksheet.schema.json         worksheet field contract
   evals/
     VECTORS.md                    3 acceptance vectors + rubric
-    grader.py                     programmatic grader (C1–C6), stdlib only
-    test_grader.py                22 tests — run exactly: python3 -W error::ResourceWarning evals/test_grader.py
+    grader.py                     programmatic grader (C1–C6 core + conditional F11), stdlib only
+    test_grader.py                28 tests — run exactly: python3 -W error::ResourceWarning evals/test_grader.py
     examples/vector2_with_skill.md   GREEN exemplar (graded PASS)
     examples/vector2_baseline.md     RED exemplar — the documented no-skill failure
   evidence/
@@ -42,7 +42,7 @@ reimagine_v0.1/
 ## Run the evals
 
 ```bash
-python3 -W error::ResourceWarning evals/test_grader.py  # 22 tests
+python3 -W error::ResourceWarning evals/test_grader.py  # 28 tests
 python3 evals/grader.py evals/examples/vector2_with_skill.md    # → PASS, exit 0
 python3 evals/grader.py evals/examples/vector2_baseline.md      # → FAIL, exit 1
 ```

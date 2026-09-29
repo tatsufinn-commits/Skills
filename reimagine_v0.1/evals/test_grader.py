@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""@reimagine v0.1.1 — grader regression tests.
+"""@reimagine v0.1.2 — grader regression tests.
 
 Run (from reimagine_v0.1/): python3 -W error::ResourceWarning evals/test_grader.py
 Also works via: python3 -m unittest evals.test_grader
@@ -282,8 +282,8 @@ class ReimagineGraderTests(unittest.TestCase):
             self.assertIn(phrase, document)
             self.assertIn("2 of the 15 captured prompts", document)
             self.assertIn(clause, document)
-            self.assertIn("0.1.1", document)
-        self.assertIn("v0.1.1", read("evals/grader.py"))
+            self.assertIn("0.1.2", document)
+        self.assertIn("v0.1.2", read("evals/grader.py"))
 
     def test_text_only_schema_and_named_style_limit_are_documented(self):
         def read(relative):
@@ -301,6 +301,106 @@ class ReimagineGraderTests(unittest.TestCase):
         self.assertIn("N/A — text-only brief; fidelity claims dropped",
                       schema["properties"]["sections"]["properties"]["preserve list"]["description"])
         self.assertIn("does not detect", evidence)
+
+
+class ReimagineV012Tests(unittest.TestCase):
+    """v0.1.2 regressions: R1 CMI tripwire, R2 seven-check docs, R3 floor."""
+
+    # --- R1: documented miss phrases now fail ------------------------------
+    def test_r1_documented_miss_phrases_now_fail_law(self):
+        original = _read(WITH_SKILL)
+        phrases = ("watermark deletion", "removing the credits",
+                   "perform watermark removal now", "strip credits",
+                   "erase watermarks", "the logo was wiped")
+        for phrase in phrases:
+            with self.subTest(phrase=phrase):
+                text = _replace(original, "warm timber rainscreen palette",
+                                "warm timber rainscreen palette; " + phrase)
+                passed, results = _grade_text(text)
+                ok, detail = _result(results, "C3")
+                self.assertFalse(passed)
+                self.assertFalse(ok, "phrase not caught: %r" % phrase)
+                self.assertIn("watermark/CMI removal language", detail)
+
+    def test_r1_compliance_prose_is_not_flagged(self):
+        original = _read(WITH_SKILL)
+        guards = ("keep watermarks and credits intact",
+                  "watermark must never be removed",
+                  "never remove the watermark",
+                  "clean viewport at least 1920px")
+        for phrase in guards:
+            with self.subTest(phrase=phrase):
+                text = _replace(original, "warm timber rainscreen palette",
+                                "warm timber rainscreen palette; " + phrase)
+                passed, results = _grade_text(text)
+                ok, _ = _result(results, "C3")
+                self.assertTrue(ok, "false positive on: %r" % phrase)
+                self.assertTrue(passed)
+
+    # --- R2: seven-check distinction documented everywhere ----------------
+    def test_r2_docs_declare_the_seven_check_distinction(self):
+        def read(relative):
+            with open(os.path.join(PACKAGE, relative), encoding="utf-8") as handle:
+                return handle.read()
+        readme = read("README.md")
+        vectors = read("evals/VECTORS.md")
+        qa_gate = read("scaffolding/QA_GATE.md")
+        card = read("REIMAGINE_SKILL_CARD.md")
+        self.assertIn("(C1–C6 core + conditional F11), stdlib only", readme)
+        self.assertIn("seven checks: C1–C6 core + F11 conditional", vectors)
+        self.assertIn("| F11 tool settings |", vectors)
+        self.assertIn("fires only when PHOTO: yes", vectors)
+        self.assertIn("F11 tool settings, conditional on PHOTO: yes", qa_gate)
+        self.assertIn("F11 tool settings, which fires", grader.__doc__)
+        self.assertIn("lexical tripwire", card)
+        self.assertIn("lexical tripwire", vectors)
+
+    # --- R3: rationale floor per ruling D-003 ------------------------------
+    def test_r3_rationale_floor_is_30_nonws_6_tokens_5_distinct(self):
+        original = _read(WITH_SKILL)
+        rationale_line = next(line for line in original.splitlines()
+                              if line.startswith("RATIONALE: "))
+        failing = (
+            # Conceded D-003 candidate: five honest LABELS, no decision trail.
+            "A02 provider matrix decay ok",
+            "aaaaaa bbbbb ccccc ddddd eeeee",
+            "aaaaaa bbbbbb cccccc dddddd eeeee",
+            "aaaaaa bbbbbb aaaaaa bbbbbb aaaaaa cccccc",
+        )
+        for rationale in failing:
+            with self.subTest(rationale=rationale):
+                text = _replace(original, rationale_line, "RATIONALE: " + rationale)
+                self.assertFalse(_result(_grade_text(text)[1], "C5")[0])
+        text = _replace(original, rationale_line,
+                        "RATIONALE: Card A02 routed; provider matrix decay checked.")
+        self.assertTrue(_result(_grade_text(text)[1], "C5")[0])
+
+    def test_r3_lexical_depth_limit_is_declared_not_hidden(self):
+        # Six distinct junk tokens still satisfy any lexical floor; this test
+        # pins the DECLARED limit (fix record v0.1.2, R3) rather than hiding it.
+        original = _read(WITH_SKILL)
+        rationale_line = next(line for line in original.splitlines()
+                              if line.startswith("RATIONALE: "))
+        text = _replace(original, rationale_line,
+                        "RATIONALE: aaaaaa bbbbbb cccccc dddddd eeeeee ffffff")
+        self.assertTrue(_result(_grade_text(text)[1], "C5")[0])
+
+    # --- F11 row-count distinction -----------------------------------------
+    def test_seven_rows_photo_yes_six_rows_text_only(self):
+        exemplar = _read(WITH_SKILL)
+        self.assertEqual(len(_grade_text(exemplar)[1]), 7)
+        text = _replace(exemplar, "PHOTO: yes", "PHOTO: no")
+        text = _replace(text, "PHOTO_SOURCE: own", "PHOTO_SOURCE: none")
+        text = _replace(text,
+                        "- East elevation view at eye level — same camera and framing as the dated render (projection invariant)",
+                        "- N/A — text-only brief; fidelity claims dropped")
+        text = _replace(text,
+                        "- Cladding mood across the selected facade zone: warm timber rainscreen palette (finish study only — not a specification)",
+                        "- N/A — text-only brief; fidelity claims dropped")
+        passed, results = _grade_text(text)
+        self.assertTrue(passed)
+        self.assertEqual(len(results), 6)
+        self.assertNotIn("F11", [code for code, _, _ in results])
 
 
 if __name__ == "__main__":

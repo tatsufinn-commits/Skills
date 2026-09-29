@@ -13,7 +13,7 @@
     "STYLE_AUTHORITY": {"type": "string", "description": "lawful rung: movement/palette language, own precedent, or public-domain master — never a named living architect"},
     "AUDIENCE": {"type": "string"},
     "DEADLINE": {"type": "string"},
-    "RATIONALE": {"type": "string", "minLength": 15, "description": "decision trail incl. decay status and risk flags"},
+    "RATIONALE": {"type": "string", "minLength": 30, "description": "decision trail incl. decay status and risk flags; grader floor (ruling D-003): >=30 non-whitespace chars, >=6 tokens, >=5 distinct tokens"},
     "sections": {
       "type": "object",
       "required": ["paste text", "preserve list", "alter list", "qa gate"],

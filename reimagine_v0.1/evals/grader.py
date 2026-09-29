@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""@reimagine v0.1.1 — configuration grader.
+"""@reimagine v0.1.2 — configuration grader.
 
-Grades a CONFIG_WORKSHEET markdown file against the six configuration checks
-(C1-C6). Scores the PACKAGE (completeness, explicitness, law, QA decidability,
+Grades a CONFIG_WORKSHEET markdown file against the six CORE configuration
+checks (C1-C6) plus one conditional check — F11 tool settings, which fires
+only when PHOTO: yes, giving seven result rows (six for text-only runs).
+Scores the PACKAGE (completeness, explicitness, law, QA decidability,
 traceability, disclosure) — never image quality, which stays [N] until a
 runtime measurement tranche. Stdlib only; no network; no subprocess.
 
@@ -23,10 +25,39 @@ PROJECTION_RE = re.compile(
     r"|section|framing|\bview\b|\bplan\b)", re.IGNORECASE)
 PLACEHOLDER_RE = re.compile(
     r"⟨|\btodo\b|\btbd\b|placeholder|\[replace|\bfill in\b", re.IGNORECASE)
-FORBIDDEN_RE = re.compile(
-    r"\b(?:remove|erase|strip|delete|clean|obscure)\b"
-    r"(?:\W+\w+){0,4}\W+"
-    r"\b(?:watermark|credit|attribution|CMI|logo)\b", re.IGNORECASE)
+# CMI tripwire (v0.1.2, R1): inflected action stems (covering nominalizations
+# such as removal/deletion/erasure via stem+\w*), pluralized mark nouns, BOTH
+# word orders (verb→mark and mark→verb), with a negation window so compliance
+# prose ("watermarks must never be removed") is not flagged. Lexical
+# tripwire, not enforcement — paraphrase-level evasion still passes; the
+# refusal duty is the operator's (see VECTORS.md and card G2).
+CMI_ACTION_RE = r"(?:remov|eras|strip|delet|obscur|scrub|wip|clean)\w*"
+CMI_MARK_RE = r"(?:watermark|credit|attribution|logo)s?|CMI"
+CMI_FORWARD_RE = re.compile(
+    r"\b(?:" + CMI_ACTION_RE + r")(?:\W+\w+){0,4}\W+(?:" + CMI_MARK_RE + r")\b",
+    re.IGNORECASE)
+CMI_REVERSED_RE = re.compile(
+    r"\b(?:" + CMI_MARK_RE + r")(?:\W+\w+){0,3}\W+(?:" + CMI_ACTION_RE + r")\b",
+    re.IGNORECASE)
+CMI_NEGATED_RE = re.compile(
+    r"\b(?:not|never|no|don'?t|doesn'?t|didn'?t|can'?t|cannot|mustn'?t|won'?t"
+    r"|isn'?t|aren'?t|without|avoid)\b", re.IGNORECASE)
+
+
+def _cmi_violations(text):
+    """Return CMI-violation spans found in `text`.
+
+    A candidate span is suppressed when a negation sits inside the span or in
+    the 24 characters preceding it, so instructions to preserve marks are not
+    misread as instructions to destroy them.
+    """
+    hits = []
+    for pattern in (CMI_FORWARD_RE, CMI_REVERSED_RE):
+        for match in pattern.finditer(text):
+            window = text[max(0, match.start() - 24):match.end()]
+            if not CMI_NEGATED_RE.search(window):
+                hits.append(match.group(0).strip())
+    return hits
 NAMED_STYLE_RE = re.compile(
     r"(?i:style\s+of|manner\s+of|work\s+of|inspired\s+by)\s+"
     r"(?:the\s+)?[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'’-]*"
@@ -186,7 +217,7 @@ def grade(path):
             problems.append("PHOTO_SOURCE must be none when PHOTO is no")
     elif source not in ELIGIBLE_PHOTO_SOURCES and source != "none":
         problems.append("PHOTO_SOURCE not eligible (%r) — Gate 0 blocks emission" % source)
-    forbidden = FORBIDDEN_RE.findall(text)
+    forbidden = _cmi_violations(text)
     if forbidden:
         problems.append("watermark/CMI removal language: %s" % forbidden)
     authority = keys.get("STYLE_AUTHORITY", "")
@@ -218,9 +249,15 @@ def grade(path):
         problems.append("CARD must be one of the 34 enumerated atlas IDs (A01-A12, P01-P10, "
                         "D01-D10, T01-T02)")
     rationale = keys.get("RATIONALE", "").strip()
+    rationale_non_ws = re.sub(r"\s+", "", rationale)
     rationale_tokens = re.findall(r"[\w'-]+", rationale.casefold())
-    if len(rationale) < 15 or len(set(rationale_tokens)) < 2:
-        problems.append("RATIONALE must be substantive (>=15 chars and not one repeated token)")
+    # Floor adopted per ruling D-003 (teamwork-lt-001): MENDER's stricter
+    # union. Lexical by construction — six distinct junk tokens still pass;
+    # the depth limit is declared in the fix record, not pretended away.
+    if (len(rationale_non_ws) < 30 or len(rationale_tokens) < 6
+            or len(set(rationale_tokens)) < 5):
+        problems.append("RATIONALE must be substantive (>=30 non-whitespace "
+                        "chars, >=6 tokens, >=5 distinct tokens)")
     if not keys.get("PROVIDER"):
         problems.append("PROVIDER unstated")
     results.append(("C5", not problems, "; ".join(problems) or

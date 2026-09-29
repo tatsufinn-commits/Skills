@@ -1,4 +1,4 @@
-# EVIDENCE APPENDIX — @reimagine v0.1.1
+# EVIDENCE APPENDIX — @reimagine v0.1.2
 
 **Status:** workspace build (Skills repo) — **not live canon until Patch + Commander/Desk authorize.**
 **Author:** TSSTM (Arena AI Agent Mode), S019, 2026-09-29, Commander-commissioned.
@@ -79,6 +79,48 @@ The directive labels the supplied ranges A01–A12, P01–P10, D01–D10, T01–
 - After: with-skill exemplar **7/7 PASS** (C1–C6 + F11), exit 0; baseline **0/7**, exit 1; full suite **22/22 OK** under `python3 -W error::ResourceWarning evals/test_grader.py`.
 - Missing worksheet: before uncaught `FileNotFoundError`; after clean diagnostic and exit 2. No traceback.
 - Each before/after result above was produced by applying a focused mutation to the same with-skill worksheet and grading with the original (`git show HEAD:reimagine_v0.1/evals/grader.py`) and fixed grader. F10/F13/F14 are documented-content changes and have explicit docs regression checks.
+
+## Grader fix record — v0.1.2 (KESTREL, seat A1, 2026-09-29)
+
+**Task:** teamwork-lt-001 Cycle 1 (`05_TASKBOARD` #1) — the carried T4 residuals
+R1/R2/R3. **Base:** `8aa2f05` (MENDER's v0.1.1, unmerged by Commander order), brought
+in as full merge `be7eba8` per ruling D-001 — never squashed, MENDER's commit stays
+individually identifiable. **Role rotation:** KESTREL implements (first time as fixer),
+MENDER reviews. Reviewer contract: MENDER's pre-registered discipline.
+
+| Residual | Status | Before → after evidence / regression coverage |
+|---|---|---|
+| R1 CMI nominalization/plural gap | Fixed (documented classes) | Before: "perform watermark removal now" → C3 PASS; "strip credits" → PASS; "watermark deletion" → PASS. After: all FAIL C3. New forward+reversed patterns cover inflected stems (`remov|eras|strip|delet|obscur|scrub|wip|clean`+`\w*`, subsuming nominalizations), pluralized marks, both word orders, with a negation window so compliance prose is not flagged. Regression: 6 miss-phrases fail, 4 compliance guards pass (`test_r1_*`). |
+| R2 stale six-check counts | Fixed | Before: README tree "(C1–C6)", VECTORS rubric "six checks", QA_GATE pre-check "C1–C6", grader docstring "six configuration checks". After: all declare the conditional distinction — C1–C6 are the six CORE checks; F11 fires only when PHOTO: yes (seven result rows, six for text-only); nothing relabeled. Regression: `test_r2_docs_declare_the_seven_check_distinction` pins every location. Historical v0.1/v0.1.1 records above left untouched (append-only history). |
+| R3 rationale-floor depth | Strengthened per ruling D-003 | Before: floor ≥15 chars + ≥2 distinct tokens ("aaaa bbbb …" passed). After: MENDER's stricter union adopted — ≥30 non-whitespace chars AND ≥6 normalized tokens AND ≥5 distinct tokens. Schema minLength 15→30; CONFIG_WORKSHEET aligned. Regression: `test_r3_rationale_floor_is_30_nonws_6_tokens_5_distinct` incl. the conceded five-token candidate `A02 provider matrix decay ok` as a negative fixture. |
+
+### D-003 concession record (KESTREL, on the room record)
+
+The defense window asked for a concrete HONEST five-token rationale that should
+legitimately pass. Closest candidate: `A02 provider matrix decay ok` — five tokens,
+zero reasoning: labels, not a decision trail. Under the package's own definition
+(decision trail incl. decay status and risk flags), every rationale that actually
+traces a decision lands at ≥6 tokens naturally. CONCEDED on evidence; 30/6/5
+implemented; the candidate ships as a negative fixture.
+
+### Declared lexical limits (not hidden)
+
+- **R1:** the CMI patterns remain a lexical tripwire. Paraphrase-level evasion
+  (e.g. "take the stamp off") still passes; the refusal duty is the operator's.
+  Declared in VECTORS.md and card G2.
+- **R3:** six distinct junk tokens still satisfy any lexical floor; the regression
+  test `test_r3_lexical_depth_limit_is_declared_not_hidden` pins this limit instead
+  of pretending it away.
+
+### Captured outputs (v0.1.2, from `reimagine_v0.1/`)
+
+- `python3 -W error::ResourceWarning evals/test_grader.py` → **28/28 OK**, quiet.
+- Exemplar → **7/7 PASS** (C1–C6 + F11), exit 0 · baseline → **0/7**, exit 1.
+- Missing worksheet → clean `error: worksheet not found`, exit 2 · `py_compile` OK.
+- Full T4-era probe battery re-run against v0.1.2: every v0.1.1 behavior preserved
+  (Gate-0, placeholders, honest details, anchored reject-drift, parse whitelist,
+  atlas IDs, named-style, text-only positive controls, projection negative control).
+- Examples byte-identical to v0.1.1 (anchor discipline).
 
 ## Honesty declaration
 

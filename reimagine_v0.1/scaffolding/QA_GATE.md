@@ -34,4 +34,4 @@ If a LOCKED invariant drifted: **reject the output; redo the operation in an aut
 
 ## Programmatic pre-check
 
-`python3 evals/grader.py <worksheet>` — checks the **configuration** (C1–C6: completeness, explicitness, law, QA decidability, traceability, disclosure). Grader PASS ≠ image quality; it means the package is complete, explicit, lawful, decidable, traceable and disclosed. Image quality stays `[N]` until the fidelity harness measures a run.
+`python3 evals/grader.py <worksheet>` — checks the **configuration** (C1–C6 core: completeness, explicitness, law, QA decidability, traceability, disclosure + F11 tool settings, conditional on PHOTO: yes — seven result rows with a photo, six for text-only). Grader PASS ≠ image quality; it means the package is complete, explicit, lawful, decidable, traceable and disclosed. Image quality stays `[N]` until the fidelity harness measures a run.

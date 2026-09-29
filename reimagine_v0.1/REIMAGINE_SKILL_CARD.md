@@ -1,7 +1,7 @@
 # `@reimagine` — Image Re-Imagination Configuration Subskill
 
 **Class:** Active skill (configuration engine) + scaffolding
-**Version:** 0.1.1 (workspace build / design-of-record)
+**Version:** 0.1.2 (workspace build / design-of-record)
 **Date:** 2026-09-29
 **Status:** Polishing in the Skills workspace — **not** live canon until Patch + Commander/Desk authorize
 **Parents:** Prompt kit · Prompt atlas · Blind-spots leg · 3D-enhancers leg · Vicinity-maps v2 · Practitioner audit · Student workflow (all: Skills repo `docs/`, 2026-09-29)
@@ -74,7 +74,7 @@ Activate when the Commander/user supplies an **image** (photo, screenshot, rende
 ## HARD GATES (law — gates, not advisories)
 
 - **G1 Rights pre-flight.** Own / licensed / cleared only. "No watermark," "Pinterest pin," "for class," "credits to owner" are **not** blanket licences (IPOPHL). Unknown rights → **do not upload**; describe an aesthetic in your own words or substitute a verifiable licensed item instead.
-- **G2 CMI.** Never remove or obscure watermarks, credits, or attribution marks — including "incidentally" during enhancement. Refuse + explain.
+- **G2 CMI.** Never remove or obscure watermarks, credits, or attribution marks — including "incidentally" during enhancement. Refuse + explain. (Grader C3 screens this as a lexical tripwire across common phrasing classes — inflections, nominalizations, plurals, both word orders, with a negation guard for compliance prose; paraphrase-level evasion still passes. The refusal duty is the operator's; the regex is a tripwire, not enforcement.)
 - **G3 PD 1096 (vicinity plates).** Vicinity map within **2.00 km radius** (commercial/industrial/institutional) or **0.5 km** (residential), prominent landmarks/major thoroughfares, existing buildings hatched with distances to the proposed building; review/signature reserved to an **RLA**. AI composes *presentation*, never *geographic truth* — the radius, landmarks, distances and hatching are yours, re-overlayed from your own vector layers.
 - **G4 Disclosure.** School/competition context → reproducible attribution (source, access date, URL, prompt description) + concept caption on the presentation sheet: *"AI-assisted concept visualization based on my [dated] model view; material/light reimagined; building dimensions and site context must be checked against the original drawings."* Disclosure is clear communication, not a licence substitute.
 - **G5 Style authority.** Use own precedent, generic movement/palette language, or public-domain masters; reformulate named-style requests. Residual grader limitation: it detects the documented phrase patterns followed by capitalized names; it does not detect every indirect imitation, alias, or legal edge case, and capitalized non-person names can be false positives.
