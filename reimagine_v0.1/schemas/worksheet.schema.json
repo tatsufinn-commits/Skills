@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "@reimagine configuration worksheet",
+  "type": "object",
+  "required": ["TASK", "CARD", "PROVIDER", "PHOTO", "PHOTO_SOURCE", "SCHOOL", "STYLE_AUTHORITY", "RATIONALE", "sections"],
+  "properties": {
+    "TASK": {"type": "string"},
+    "CARD": {"type": "string", "pattern": "^(A|P|D|T)\\d{2}$"},
+    "PROVIDER": {"type": "string", "description": "tool + model/version as confirmed in the live UI"},
+    "PHOTO": {"type": "string", "enum": ["yes", "no"]},
+    "PHOTO_SOURCE": {"type": "string", "enum": ["own", "licensed", "cleared", "internet-untraced", "none"]},
+    "SCHOOL": {"type": "string", "enum": ["yes", "no"]},
+    "STYLE_AUTHORITY": {"type": "string", "description": "lawful rung: movement/palette language, own precedent, or public-domain master — never a named living architect"},
+    "AUDIENCE": {"type": "string"},
+    "DEADLINE": {"type": "string"},
+    "RATIONALE": {"type": "string", "minLength": 15, "description": "decision trail incl. decay status and risk flags"},
+    "sections": {
+      "type": "object",
+      "required": ["paste text", "preserve list", "alter list", "qa gate"],
+      "properties": {
+        "paste text": {"type": "string", "description": "paste-ready prompt; no unresolved brackets"},
+        "preserve list": {"type": "array", "items": {"type": "string"}, "description": "≥1 item when PHOTO=yes; first item = projection/view invariant; the literal string 'N/A — text-only brief; fidelity claims dropped' when PHOTO=no"},
+        "alter list": {"type": "array", "items": {"type": "string"}, "description": "≥1 item when PHOTO=yes; 'N/A' line when PHOTO=no"},
+        "qa gate": {"type": "array", "items": {"type": "string"}, "description": "≥5 decidable checkbox lines, each containing a check verb; plus one REJECT-DRIFT RULE line"},
+        "disclosure": {"type": "string", "description": "required when SCHOOL=yes: caption + reproducible attribution with URL, access date (YYYY-MM-DD), prompt description"},
+        "tool settings": {"type": "array", "items": {"type": "string"}},
+        "log": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}
