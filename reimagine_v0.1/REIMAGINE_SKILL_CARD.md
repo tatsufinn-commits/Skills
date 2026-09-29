@@ -1,11 +1,11 @@
 # `@reimagine` — Image Re-Imagination Configuration Subskill
 
 **Class:** Active skill (configuration engine) + scaffolding
-**Version:** 0.1.0 (workspace build / design-of-record)
+**Version:** 0.1.1 (workspace build / design-of-record)
 **Date:** 2026-09-29
 **Status:** Polishing in the Skills workspace — **not** live canon until Patch + Commander/Desk authorize
 **Parents:** Prompt kit · Prompt atlas · Blind-spots leg · 3D-enhancers leg · Vicinity-maps v2 · Practitioner audit · Student workflow (all: Skills repo `docs/`, 2026-09-29)
-**Doctrine:** Words carry look, tools carry truth. The preserve-list is the highest-leverage free change available (~2× measured edge-IoU). All atlas cards are `[N]` — this skill configures doctrine-best, never claims measured-best.
+**Doctrine:** Words carry look, tools carry truth. In a 16-item audit (15 captured practitioner prompts + 1 own comparator), only 2 of the 15 captured prompts contained preserve-language. The preserve-list is the highest-leverage free change available (~2× measured edge-IoU) (single-plate, 3-run calibration; the winning run still retained only 25.4% of required-annotation pixels — measured, not magic). All atlas cards are `[N]` — this skill configures doctrine-best, never claims measured-best.
 
 ---
 
@@ -13,7 +13,7 @@
 
 On trigger, convert a **task brief + photo reference** into a **paste-ready, law-gated prompt package** — routing to the right problem-card and provider, forcing the decisions operators forget (preserve/alter lists, rights pre-flight, disclosure), and gating the result through decidable QA before anything ships.
 
-**Problem this solves (evidence-backed):** practitioners' prompt practice is styling-led and tool-anchored — 13 of 15 audited real prompts had **no preserve-language at all**, and both that did were meta-advice, not generation text. Meanwhile a measured experiment shows the preserve-list prompt is worth ~2× geometric fidelity, and a plate audit shows required annotations can vanish invisibly ("it looked fine"). The skill makes the disciplined path the default path.
+**Problem this solves (evidence-backed):** practitioners' prompt practice is styling-led and tool-anchored — in a 16-item audit (15 captured practitioner prompts + 1 own comparator), only 2 of the 15 captured prompts contained preserve-language, and both were meta-advice, not generation text. Meanwhile a measured experiment shows the preserve-list prompt is worth ~2× geometric fidelity, and a plate audit shows required annotations can vanish invisibly ("it looked fine"). The skill makes the disciplined path the default path.
 
 ---
 
@@ -77,6 +77,7 @@ Activate when the Commander/user supplies an **image** (photo, screenshot, rende
 - **G2 CMI.** Never remove or obscure watermarks, credits, or attribution marks — including "incidentally" during enhancement. Refuse + explain.
 - **G3 PD 1096 (vicinity plates).** Vicinity map within **2.00 km radius** (commercial/industrial/institutional) or **0.5 km** (residential), prominent landmarks/major thoroughfares, existing buildings hatched with distances to the proposed building; review/signature reserved to an **RLA**. AI composes *presentation*, never *geographic truth* — the radius, landmarks, distances and hatching are yours, re-overlayed from your own vector layers.
 - **G4 Disclosure.** School/competition context → reproducible attribution (source, access date, URL, prompt description) + concept caption on the presentation sheet: *"AI-assisted concept visualization based on my [dated] model view; material/light reimagined; building dimensions and site context must be checked against the original drawings."* Disclosure is clear communication, not a licence substitute.
+- **G5 Style authority.** Use own precedent, generic movement/palette language, or public-domain masters; reformulate named-style requests. Residual grader limitation: it detects the documented phrase patterns followed by capitalized names; it does not detect every indirect imitation, alias, or legal edge case, and capitalized non-person names can be false positives.
 
 ---
 

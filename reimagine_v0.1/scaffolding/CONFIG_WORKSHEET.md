@@ -1,6 +1,6 @@
 # CONFIG_WORKSHEET — the emit template
 
-One worksheet per run (Stage 6). This template **is** the machine contract consumed by `evals/grader.py` (see schemas/worksheet.schema.json): `KEY: value` lines are parsed position-agnostically; `## Section` headers open sections; preserve/alter/QA items are `- ` list lines; QA boxes are `- [ ]`. Replace every `⟨…⟩` before emitting — no placeholders survive to a PASS.
+One worksheet per run (Stage 6). This template **is** the machine contract consumed by `evals/grader.py` (see schemas/worksheet.schema.json): only documented key names are recognized as `KEY: value` lines (key-like prose inside sections stays section content); `## Section` headers open sections; preserve/alter/QA items are `- ` list lines; QA boxes are `- [ ]`. Replace every `⟨…⟩` before emitting — no placeholders survive to a PASS.
 
 ```markdown
 # @reimagine — Configuration Worksheet ⟨run id / date⟩
@@ -10,7 +10,7 @@ TASK: ⟨one sentence: what is being re-imagined and why⟩
 CARD: ⟨A|P|D|T⟩⟨00⟩            ← from references/atlas-router.md
 PROVIDER: ⟨tool + model/version as confirmed in the live UI⟩
 PHOTO: ⟨yes|no⟩
-PHOTO_SOURCE: ⟨own|licensed|cleared|internet-untraced|none⟩
+PHOTO_SOURCE: ⟨own|licensed|cleared|internet-untraced|none⟩   ← with PHOTO: yes, only own/licensed/cleared pass Gate 0
 SCHOOL: ⟨yes|no⟩               ← any coursework/competition context
 STYLE_AUTHORITY: ⟨rung + wording — movement/palette language, own precedent, or public-domain master; never a named living architect⟩
 AUDIENCE: ⟨internal mood study|client concept|public|approval package⟩
@@ -33,6 +33,7 @@ not guessed. Goes only where the paste-field router says text goes at all.⟩
 - ⟨the ONE bounded change from intake field 4⟩
 
 ## Tool settings
+- ⟨at least one concrete settings item is required when PHOTO: yes⟩
 - ⟨inputs attached and their roles (A geometry/base · B style-only · C mask)⟩
 - ⟨channel setup: e.g. ControlNet depth 0.7–0.8 / img2img 0.35–0.55 / IP-Adapter 0.5–0.7⟩
 - ⟨versions, seed if exposed, what was actually accepted⟩
@@ -44,7 +45,7 @@ not guessed. Goes only where the paste-field router says text goes at all.⟩
 - [ ] ⟨decidable check: confirm no unrequested content (people, logos, labels, new elements)⟩
 - [ ] ⟨decidable check: dimensions/site conditions validated in original documents, not pixels⟩
 - [ ] ⟨decidable check: caption + attribution placed outside the generative pass⟩
-REJECT-DRIFT RULE: on drift of any LOCKED invariant — reject, redo in an authoritative CAD/photo/mesh editor or attach better measured inputs; never re-prompt adjectives at a drifted output.
+REJECT-DRIFT RULE: on drift of any LOCKED invariant — reject the output; redo in an authoritative CAD/photo/mesh editor or attach better measured inputs; never re-prompt adjectives at a drifted output.
 
 ## Disclosure            ← required when SCHOOL: yes
 ⟨Caption (presentation sheet): "AI-assisted concept visualization based on my [dated]
@@ -62,4 +63,4 @@ limits, [N] card status)⟩
 - ⟨date · input id · tool + version · card id · measured numbers or "not measured" · verdict⟩
 ```
 
-**Emission rules:** placeholders → not emittable (Stage 5 blocks). PHOTO: no → preserve/alter lists become "N/A — text-only brief; fidelity claims dropped" (grader expects exactly that line in each section). PHOTO_SOURCE: internet-untraced → the worksheet may not be emitted at all (Gate 0).
+**Emission rules:** placeholders → not emittable (Stage 5 blocks; scan applies to every section and key value). PHOTO: no → the preserve list must contain the literal item `N/A — text-only brief; fidelity claims dropped`, and the alter list must contain an `N/A` item. PHOTO: yes → tool settings must contain at least one list item. PHOTO=yes with PHOTO_SOURCE internet-untraced/unknown/none → the worksheet may not be emitted (Gate 0); PHOTO=no requires `none`. Grader C5 accepts only the 34 enumerated atlas IDs (A01–A12, P01–P10, D01–D10, T01–T02) and requires a rationale of at least 15 characters with more than one distinct token.

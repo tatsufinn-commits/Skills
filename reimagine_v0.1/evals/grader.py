@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""@reimagine v0.1 — configuration grader.
+"""@reimagine v0.1.1 — configuration grader.
 
 Grades a CONFIG_WORKSHEET markdown file against the six configuration checks
 (C1-C6). Scores the PACKAGE (completeness, explicitness, law, QA decidability,
@@ -7,6 +7,7 @@ traceability, disclosure) — never image quality, which stays [N] until a
 runtime measurement tranche. Stdlib only; no network; no subprocess.
 
 Usage:  python3 evals/grader.py <worksheet.md>     → exit 0 PASS / 1 FAIL
+        Invalid usage or a missing/unreadable worksheet exits 2.
 """
 
 import re
@@ -15,21 +16,34 @@ import sys
 REQUIRED_KEYS = ["TASK", "CARD", "PROVIDER", "PHOTO", "PHOTO_SOURCE",
                  "SCHOOL", "STYLE_AUTHORITY", "RATIONALE"]
 REQUIRED_SECTIONS = ["paste text", "preserve list", "alter list", "qa gate"]
+KNOWN_KEYS = set(REQUIRED_KEYS + ["AUDIENCE", "DEADLINE"])
 
 PROJECTION_RE = re.compile(
     r"(camera|viewpoint|elevation|eye-?level|aerial|perspective|projection"
     r"|section|framing|\bview\b|\bplan\b)", re.IGNORECASE)
 PLACEHOLDER_RE = re.compile(
-    "⟨|todo|tbd|placeholder|\\[replace|\\bfill in\\b", re.IGNORECASE)
+    r"⟨|\btodo\b|\btbd\b|placeholder|\[replace|\bfill in\b", re.IGNORECASE)
 FORBIDDEN_RE = re.compile(
-    r"(remove|erase|strip|clean)\s+(the\s+)?(watermark|credit)", re.IGNORECASE)
-NAMED_STYLE_RE = re.compile(r"style of\s+[A-Z]")
+    r"\b(?:remove|erase|strip|delete|clean|obscure)\b"
+    r"(?:\W+\w+){0,4}\W+"
+    r"\b(?:watermark|credit|attribution|CMI|logo)\b", re.IGNORECASE)
+NAMED_STYLE_RE = re.compile(
+    r"(?i:style\s+of|manner\s+of|work\s+of|inspired\s+by)\s+"
+    r"(?:the\s+)?[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'’-]*"
+    r"(?:\s+[A-Z][A-Za-zÀ-ÖØ-öø-ÿ'’-]*)*")
 CHECK_VERB_RE = re.compile(
-    r"(verify|confirm|compare|count|check|measure|overlay|inspect|validate)",
+    r"\b(verify|confirm|compare|count|check|measure|overlay|inspect|validate)\b",
     re.IGNORECASE)
-CARD_RE = re.compile(r"^(A|P|D|T)\d{2}$")
+CARD_IDS = frozenset((
+    "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11", "A12",
+    "P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10",
+    "D01", "D02", "D03", "D04", "D05", "D06", "D07", "D08", "D09", "D10",
+    "T01", "T02",
+))
+ELIGIBLE_PHOTO_SOURCES = frozenset(("own", "licensed", "cleared"))
 URL_RE = re.compile(r"https?://\S+")
 DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+TEXT_ONLY_PRESERVE = "N/A — text-only brief; fidelity claims dropped"
 
 CHECK_NAMES = {
     "C1": "completeness", "C2": "explicitness", "C3": "lawful",
@@ -38,21 +52,25 @@ CHECK_NAMES = {
 
 
 def parse(text):
-    """Parse worksheet text into (keys, sections). KEY: lines are
-    position-agnostic; '## Header' lines open sections."""
+    """Parse worksheet text into (known keys, normalized sections).
+
+    Only documented key names are recognized. Key-like lines in a section stay
+    section content, so ordinary QA, settings, and log prose cannot overwrite
+    the worksheet header fields.
+    """
     keys, sections, current = {}, {}, None
     for line in text.splitlines():
-            header = re.match(r"^##\s+(.+?)\s*$", line)
-            if header:
-                current = header.group(1).lower()
-                sections.setdefault(current, [])
-                continue
-            key = re.match(r"^([A-Z][A-Z_]*):\s*(.*)$", line)
-            if key:
-                keys[key.group(1)] = key.group(2).strip()
-                continue
-            if current is not None:
-                sections[current].append(line)
+        header = re.match(r"^##\s+(.+?)\s*$", line)
+        if header:
+            current = header.group(1).lower()
+            sections.setdefault(current, [])
+            continue
+        key = re.match(r"^([A-Z][A-Z_]*):\s*(.*)$", line)
+        if key and key.group(1) in KNOWN_KEYS:
+            keys[key.group(1)] = key.group(2).strip()
+            continue
+        if current is not None:
+            sections[current].append(line)
     return keys, sections
 
 
@@ -60,7 +78,7 @@ def _items(sections, name):
     out = []
     for line in sections.get(name, []):
         item = re.match(r"^\s*-\s+(.+?)\s*$", line)
-        if item and not item.group(1).startswith("N/A"):
+        if item:
             out.append(item.group(1))
     return out
 
@@ -77,6 +95,32 @@ def _qa_boxes(sections):
 def _paste_text(sections):
     lines = [ln.strip() for ln in sections.get("paste text", [])]
     return "\n".join(ln for ln in lines if ln and not ln.startswith("```"))
+
+
+def _has_affirmative_reject_drift_rule(lines):
+    """Require an anchored, affirmative reject-drift instruction with escalation."""
+    for line in lines:
+        match = re.match(r"^\s*REJECT-DRIFT RULE:\s*(.*)$", line, re.IGNORECASE)
+        if not match:
+            continue
+        rule = match.group(1)
+        lower = rule.lower()
+        if not re.search(r"\breject\b", lower) or not re.search(r"\bdrift\b", lower):
+            continue
+        if not re.search(r"\b(authoritative|redo|editor)\b", lower):
+            continue
+        # Disallow formulations such as "never reject outputs; drift is
+        # acceptable" even though they contain all three required keywords.
+        if re.search(
+                r"\b(?:never|not|no|don't|dont|cannot|can't)\b"
+                r"(?:\W+\w+){0,3}\W+reject\b", lower):
+            continue
+        if re.search(
+                r"\b(?:never|not|no|don't|dont|cannot|can't|avoid|skip)\b"
+                r"(?:\W+\w+){0,4}\W+(?:authoritative|redo|editor)\b", lower):
+            continue
+        return True
+    return False
 
 
 def grade(path):
@@ -97,7 +141,9 @@ def grade(path):
     paste = _paste_text(sections)
     if REQUIRED_SECTIONS[0] in sections and not paste.strip():
         problems.append("paste text is empty")
-    scanned = paste + " " + " ".join(keys.get(k, "") for k in REQUIRED_KEYS)
+    scanned = "\n".join(text for content in sections.values()
+                        for text in content)
+    scanned += "\n" + "\n".join(keys.values())
     hits = PLACEHOLDER_RE.findall(scanned)
     if hits:
         problems.append("placeholder tokens present: %s" % sorted(set(hits)))
@@ -116,29 +162,37 @@ def grade(path):
         if preserve and not PROJECTION_RE.search(" ".join(preserve)):
             problems.append("preserve list lacks the projection/view invariant")
     elif photo == "no":
-        for name in ("preserve list", "alter list"):
-            joined = " ".join(sections.get(name, []))
-            if "N/A" not in joined:
-                problems.append("'%s' must carry the N/A line for text-only briefs" % name)
+        preserve_items = _items(sections, "preserve list")
+        alter_items = _items(sections, "alter list")
+        if TEXT_ONLY_PRESERVE not in preserve_items:
+            problems.append("preserve list must contain the literal text-only N/A line")
+        if not any(item == "N/A" or item.startswith("N/A ") for item in alter_items):
+            problems.append("alter list must contain an N/A item for text-only briefs")
     else:
         problems.append("PHOTO key must be yes/no")
-    results.append(("C2", not problems, "; ".join(problems) or
-                    "preserve/alter lists explicit, projection invariant present"
-                    if photo == "yes" else "text-only brief correctly drops fidelity claims"))
+    detail = "; ".join(problems) if problems else (
+        "preserve/alter lists explicit, projection invariant present" if photo == "yes"
+        else "documented N/A preserve/alter items; fidelity claims dropped")
+    results.append(("C2", not problems, detail))
 
     # C3 — lawful -----------------------------------------------------------
     problems = []
     source = keys.get("PHOTO_SOURCE", "").strip().lower()
-    if source not in ("own", "licensed", "cleared", "none"):
-        problems.append("PHOTO_SOURCE not eligible (%r) — Gate 0 blocks emission"
-                        % source)
+    if photo == "yes":
+        if source not in ELIGIBLE_PHOTO_SOURCES:
+            problems.append("Gate 0 — rights unresolved; do not emit.")
+    elif photo == "no":
+        if source not in ELIGIBLE_PHOTO_SOURCES and source != "none":
+            problems.append("PHOTO_SOURCE must be none when PHOTO is no")
+    elif source not in ELIGIBLE_PHOTO_SOURCES and source != "none":
+        problems.append("PHOTO_SOURCE not eligible (%r) — Gate 0 blocks emission" % source)
     forbidden = FORBIDDEN_RE.findall(text)
     if forbidden:
         problems.append("watermark/CMI removal language: %s" % forbidden)
     authority = keys.get("STYLE_AUTHORITY", "")
     if not authority:
         problems.append("style authority unstated")
-    elif NAMED_STYLE_RE.search(authority):
+    elif NAMED_STYLE_RE.search(authority) or NAMED_STYLE_RE.search(text):
         problems.append("named-style imitation — reformulate to a lawful rung "
                         "(movement/palette, own precedent, public-domain master)")
     results.append(("C3", not problems, "; ".join(problems) or
@@ -152,19 +206,21 @@ def grade(path):
     undecidable = [b for b in boxes if not CHECK_VERB_RE.search(b)]
     if undecidable:
         problems.append("QA lines without a check verb: %d" % len(undecidable))
-    joined_qa = " ".join(sections.get("qa gate", []))
-    if not ("reject-drift" in joined_qa.lower()
-            or ("reject" in joined_qa.lower() and "drift" in joined_qa.lower())):
-        problems.append("REJECT-DRIFT rule line missing")
+    if not _has_affirmative_reject_drift_rule(sections.get("qa gate", [])):
+        problems.append("anchored affirmative REJECT-DRIFT RULE with escalation missing")
     results.append(("C4", not problems, "; ".join(problems) or
-                    "%d decidable QA checks + reject-drift rule" % len(boxes)))
+                    "%d decidable QA checks + affirmative reject-drift rule" % len(boxes)))
 
     # C5 — traceability -----------------------------------------------------
     problems = []
-    if not CARD_RE.match(keys.get("CARD", "")):
-        problems.append("CARD must match (A|P|D|T)+2 digits (atlas ID)")
-    if len(keys.get("RATIONALE", "")) < 15:
-        problems.append("RATIONALE too thin (<15 chars)")
+    card = keys.get("CARD", "").strip()
+    if card not in CARD_IDS:
+        problems.append("CARD must be one of the 34 enumerated atlas IDs (A01-A12, P01-P10, "
+                        "D01-D10, T01-T02)")
+    rationale = keys.get("RATIONALE", "").strip()
+    rationale_tokens = re.findall(r"[\w'-]+", rationale.casefold())
+    if len(rationale) < 15 or len(set(rationale_tokens)) < 2:
+        problems.append("RATIONALE must be substantive (>=15 chars and not one repeated token)")
     if not keys.get("PROVIDER"):
         problems.append("PROVIDER unstated")
     results.append(("C5", not problems, "; ".join(problems) or
@@ -186,23 +242,40 @@ def grade(path):
                 problems.append("disclosure lacks a prompt description")
     elif school != "no":
         problems.append("SCHOOL key must be yes/no")
-    results.append(("C6", not problems, "; ".join(problems) or
-                    "disclosure complete (URL, access date, prompt description)"
-                    if school == "yes" else "no school context — disclosure N/A"))
+    detail = "; ".join(problems) if problems else (
+        "disclosure complete (URL, access date, prompt description)" if school == "yes"
+        else "no school context — disclosure N/A")
+    results.append(("C6", not problems, detail))
+
+    # F11 — photo tools -----------------------------------------------------
+    if photo == "yes":
+        tool_items = _items(sections, "tool settings")
+        tool_ok = bool(tool_items)
+        tool_detail = ("tool settings section contains >=1 item" if tool_ok else
+                       "PHOTO=yes requires a tool settings section with >=1 item")
+        results.append(("F11", tool_ok, tool_detail))
 
     return all(passed for _, passed, _ in results), results
 
 
 def main(argv):
     if len(argv) != 2:
-        print("usage: python3 evals/grader.py <worksheet.md>")
+        print("usage: python3 evals/grader.py <worksheet.md>", file=sys.stderr)
         return 2
-    passed, results = grade(argv[1])
+    path = argv[1]
+    try:
+        passed, results = grade(path)
+    except OSError as exc:
+        if isinstance(exc, FileNotFoundError):
+            print("error: worksheet not found: %s" % path, file=sys.stderr)
+        else:
+            print("error: cannot read worksheet %s: %s" % (path, exc), file=sys.stderr)
+        return 2
     for code, ok, detail in results:
         print("%s %-4s %-16s %s" % ("PASS" if ok else "FAIL", code,
-                                    CHECK_NAMES[code], detail))
+                                    CHECK_NAMES.get(code, "tool settings"), detail))
     passed_count = sum(1 for _, ok, _ in results if ok)
-    print("— %d/6 checks passed" % passed_count)
+    print("— %d/%d checks passed" % (passed_count, len(results)))
     return 0 if passed else 1
 
 
