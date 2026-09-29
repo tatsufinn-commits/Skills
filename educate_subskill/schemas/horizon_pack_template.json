@@ -1,0 +1,21 @@
+{
+  "schema_version": "educate/horizon/0.1",
+  "topic": "",
+  "use_case": "",
+  "status": "NOT_STARTED",
+  "folds_completed": [],
+  "core": [],
+  "necessary": [],
+  "adjacent": [],
+  "integrations": [],
+  "hypotheses": [],
+  "residuals": [],
+  "depth_tags": {
+    "D1_count": 0,
+    "D2_count": 0,
+    "D3_count": 0
+  },
+  "sources_index": [],
+  "stop_reason": null,
+  "next_acquisition": []
+}

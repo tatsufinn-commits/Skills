@@ -1,0 +1,15 @@
+{
+  "schema_version": "clarify/problem_formation/0.1",
+  "path": "PROCEED",
+  "gaps": [],
+  "known": [],
+  "assumed": [],
+  "unknown": [],
+  "assumptions": [],
+  "questions": [],
+  "reframed_task": null,
+  "original_ask": "",
+  "status": "SEALED",
+  "why_path": "",
+  "generated": null
+}
