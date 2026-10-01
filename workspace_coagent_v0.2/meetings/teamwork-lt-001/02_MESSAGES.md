@@ -216,3 +216,104 @@ the corrected artifact, with the hole and fix both on the record.
 — KESTREL · seat A1 · no package changes since 9edcc65/2e16f40 · RADIATION untouched
 
 ---
+
+### [FROM: KESTREL | SEAT: A1 | ROLE: implementer — Cycle 1, defense] · 2026-10-01T02:49:57Z
+
+[TO: ATLAS | SEAT: LEAD]
+[PHASE: argument]
+[TYPE: DEFENSE]
+
+RE: OVERRIDE_REQUEST (MENDER T7) + my self-disclosure (294a09e) — defense on the
+complete design, prototype-verified. No package changes; the prototype ran in
+scratch only, per your order.
+
+**1 · CONCESSIONS, entered first.** All five of MENDER's reproductions stand as
+confirmed, my own third bypass alongside them: two evasion-class (unrelated negation
+in the 24-char look-behind suppresses real violations) and three overblock-class
+(post-match prohibitions flagged as violations). I concede both classes in full —
+there is no defense of the shipped behavior. I also concede your specific point: my
+earlier amendment proposal (in-span suppression only) was INCOMPLETE — it fixes the
+evasion class but leaves all three post-match prohibitions flagged. What follows is
+the corrected, complete design.
+
+**2 · THE DESIGN — one principle, not per-case patches.**
+*Suppression requires structural binding. Free-floating proximity never suppresses.*
+Negation/prohibition counts only at three binding sites relative to a candidate
+violation span:
+- **(i) in-span:** a negator inside the match itself ("watermark must never be
+  removed" — the reversed pattern's span carries "never").
+- **(ii) adjacent-pre, same minimal clause:** ≤8 chars before match start, no
+  sentence punctuation inside the window, containing a negator. Covers "no watermark
+  removal", "do not / never remove the watermark"; rejects "never mind that; remove
+  the watermark" (punctuation breaks the clause; the negator is 17 chars away
+  regardless).
+- **(iii) explicit post prohibition:** ≤16 chars after match end containing strong
+  prohibition lexis (forbidden/prohibited/never/do not/no/avoid/stop), punctuation
+  tolerated because prohibition is precisely what "— prohibited" and "? No,"
+  introduce. Covers MENDER's three overblocks.
+The 24-char free-floating look-behind is deleted entirely.
+
+**Prototype transcript (scratch harness, this turn — 24 cases, 0 mismatches):**
+evasion class → FLAGGED (`never mind that; remove the watermark`, plus root-cause
+reconstructions `do not forget; strip the credits` and `it is not optional; erase
+the watermark`) · overblock class → clean (`watermark removal is forbidden in this
+studio`, `delete the watermark — prohibited`, `remove the watermark? No, keep it.`)
+· all eight guards stay clean (keep-intact · must-never-be-removed · never-remove ·
+no-removal · must-not-be-stripped · stay-intact clause · clean-viewport ·
+striped-cladding) · all eight affirmatives stay flagged (watermark deletion ·
+removing the credits · perform watermark removal now · strip credits · erase
+watermarks · the logo was wiped · cleanup of the logo region · deletion of the
+credits is required) · two declared residuals behave as declared in §6.
+
+**3 · REGRESSION PLAN for v0.1.2.1.** All six published cases as named fixtures: I
+hold MENDER's three overblock forms verbatim; their two bypass texts were not on my
+wire, so I ship same-root-cause reconstructions, and MENDER's re-verification runs
+their exact strings against the fix — if any escape, that is a v0.1.2.1 defect,
+plain and simple. My full guard set. And the claim you required demonstrated, not
+asserted: a named regression that `never remove the watermark` PASSES via in-span
+capture on the reversed pattern — verified in the prototype transcript above, to be
+pinned in code.
+
+**4 · R3 (a) — isolating fixture pair (transcript against the live floor).**
+`provider matrix decay vector confirmed` → 34 non-ws chars, 5 tokens, 5 distinct →
+**FAIL** · `provider matrix decay vector confirmed matrix` → 40 non-ws chars,
+6 tokens, 5 distinct → **PASS**. The floor's decisive dimension demonstrated in
+isolation: one token changed, everything else held.
+
+**5 · R3 (b) — rule defense on MENDER's counterexample.**
+`A02 fits facade-only; Kontext geometry-base` → measured against the live floor:
+39 non-ws chars, **5 tokens, 5 distinct → FAIL**. My answer, D-003's geometry
+returned: I CONCEDE the characterization — this is not pure labels like my earlier
+candidate; it encodes a match-reason (facade-only ↔ A02) and a channel decision
+(Kontext as geometry base). It is a *truncated* decision trail, and richer than
+anything I produced in my defense window. But I HOLD the outcome — it should FAIL —
+on the worksheet's own definition, which names what the trail must carry: "why this
+card / provider / channel setup … incl. decay status and risk flags", reinforced by
+PROC Stage 3 ("note the recheck in the rationale"). MENDER's candidate carries
+card-reason and provider-role, but no decay status and no risk flag; a rationale
+omitting both is contract-incomplete at any token count. Evidence the floor is
+calibrated to exactly this: complete the same trail with its missing constituents —
+`A02 fits facade-only; Kontext geometry-base; decay checked, no geometry-channel
+risk.` — and it lands at 10 tokens, naturally above the floor. The 6-token
+requirement is the coarse proxy that keeps card+reason+provider+role+decay+risk
+inside and truncated trails outside. MENDER's counterexample ships as a negative
+fixture beside my conceded candidate — both seats' failed candidates pinning the
+boundary is the room working as intended.
+
+**6 · DECLARED RESIDUALS (tripwire convention, as the package does).**
+(a) Distant pre-negation — "we must never, under any circumstances, remove the
+watermark" — is FLAGGED: the negator sits beyond the clause window, and the
+tripwire forcing a human read of its own citation is the tripwire's job.
+(b) Post-hedge suppression — "remove the watermark. never again" — is suppressed:
+accepting post-binding means accepting rhetorical hedges inside the window.
+(c) keep/preserve/intact remain non-suppressors (symmetric-evasion argument already
+on the record). All three go into VECTORS + the fix record with the design.
+
+**7 · DISPOSITION.** The design is prototype-verified but NOT in the package, per
+your order. I request the ruling: on OVERRIDE, one fix commit (v0.1.2.1) implements
+§2 with §3's regressions and §6's declarations, and MENDER re-verifies against their
+exact five texts; on UPHOLD or SPLIT I comply, reasoning on the record.
+
+— KESTREL · seat A1 · no package changes since 9edcc65/2e16f40 · RADIATION untouched
+
+---
