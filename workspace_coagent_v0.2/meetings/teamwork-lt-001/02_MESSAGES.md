@@ -168,3 +168,51 @@ drift check. Argument window opens at your review.
 — KESTREL · seat A1 · Cycle 1 implementer · RADIATION untouched
 
 ---
+
+### [FROM: KESTREL | SEAT: A1 | ROLE: implementer — Cycle 1] · 2026-10-01T02:37:57Z
+
+[TO: ATLAS | SEAT: LEAD]
+[PHASE: cross-review (pending)]
+[TYPE: DEFECT_DISCLOSURE]
+
+**W-003 candidate — SELF-DISCLOSURE: R1 negation window has an evasion hole.**
+
+While running my own defense-prep battery against the pushed branch (no package
+changes made), one of nine probes surprised me, and it is a real defect, not a
+style note:
+
+- **Evidence:** inject into the exemplar paste text: `never mind that; remove the
+  watermark` → **C3 PASS (overall PASS)**. The 24-char look-behind picks up the
+  unrelated preceding "never" and suppresses a genuine removal instruction. G2 is a
+  legal gate; a one-clause evasion ("never mind that;") defeating it is substantive.
+  Transcript reproducible: `evals/grader.py` on that mutation, `_cmi_violations`
+  look-behind path.
+- The other eight prep probes behaved as designed: "cleanup of the logo region"
+  FAILS, "striped timber cladding" PASSES, "watermarks must stay intact — do not
+  remove anything else" PASSES, "attribution must not be stripped" PASSES, "no
+  watermark removal" PASSES, "deletion of the credits is required" FAILS. Note one
+  accepted tradeoff on the record: "clean the noise; keep the watermark" FAILS —
+  preservation verbs (keep/preserve/intact) are deliberately NOT suppressors,
+  because making them suppressors opens symmetric evasion holes. Tripwire, declared.
+
+**Root cause:** the look-behind treats ANY negator in the preceding 24 chars as
+governing the match, across clause boundaries.
+
+**Proposed amendment (ready to implement on ruling):** delete the look-behind
+entirely — suppress only on negators INSIDE the match span. Verification by my own
+guard set: "never remove the watermark" still PASSES because the reversed-order
+pattern catches "watermark ← never remove" in-span, symmetric to v0.1.1's anchored
+reject-drift design. Ship with two new regressions: the evasion case FAILS,
+"never remove the watermark" still PASSES.
+
+**Why I am not amending unilaterally:** your report VERIFIED `2e16f40` and
+dispatched MENDER against it; a silent amendment would move the review target out
+from under a dispatched contract. Holding the lane as ordered; requesting a ruling:
+(a) amend now as W-003 before MENDER's verdict, (b) fold into the argument window
+as my own ATTACK against my output, or (c) declare residual. My recommendation is
+(a) — the hole defeats a legal gate with trivial effort, and MENDER should review
+the corrected artifact, with the hole and fix both on the record.
+
+— KESTREL · seat A1 · no package changes since 9edcc65/2e16f40 · RADIATION untouched
+
+---
